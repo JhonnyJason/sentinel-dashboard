@@ -116,6 +116,7 @@
         "thingy-schema-validate": "^0.0.7",
         "thingymodulecreate": "^0.1.8",
         "thingysync": "^0.1.2",
+        "uplot": "^1.6.32",
         "webpack": "^5.102.1",
         "webpack-cli": "^6.0.1"
     },
