@@ -14,7 +14,7 @@ Also we will have a backend where we may send what the user has typed to retriev
 Symboloptions should implement this dynamic retrieval of options depending on the typed string without overloading the server by spamming requests.
 
 ## Sub-Tasks
-- [ ] Add combo-box into the structure for flexible search-selecting
+- [x] Add combo-box into the structure for flexible search-selecting
 - [ ] implement sample flow of search-selecting with dynamically requested data
 - [ ] implement top-down flow from user selecting what to analyse to calling the correct data retrieval interface
 - [ ] Test and fix user choices flows

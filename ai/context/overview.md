@@ -38,9 +38,13 @@ The Sentinel Dashboard is one part of a larger system:
 | `economicareamodule` | Economic area data (Eurozone, USA, Japan, UK, etc.) with indicators |
 | `currencytrendframemodule` | Currency pair scoring based on economic data |
 | `scorehelper` | Scoring algorithms for interest, inflation, GDP, COT |
-| `seasonalityframemodule` | Seasonality chart with uPlot, date selection |
-| `marketdatamodule` | Market history data handling, seasonality calculations |
-| `marketdatamodule/datacache` | EOD data cache with year-bucketed HLC storage |
+| `seasonalityframemodule` | Seasonality feature coordinator - state, data retrieval, wiring |
+| `seasonalityframemodule/comboboxfun` | `Combobox` class - fuzzy-ranked filtering, keyboard nav, dropdown |
+| `seasonalityframemodule/chartfun` | uPlot chart rendering and axis interactions |
+| `seasonalityframemodule/symboloptions` | Rate-limited symbol search with requester callback, default S&P 500 list |
+| `marketdatamodule` | Market history data interface for seasonalityframemodule |
+| `marketdatamodule/datacache` | EOD data cache, fetches from datahub via scimodule |
+| `marketdatamodule/seasonality` | Seasonality calculation algorithms (internal) |
 | `fouriermodule` | FFT analysis for seasonality patterns |
 
 ### UI Modules
@@ -53,7 +57,7 @@ The Sentinel Dashboard is one part of a larger system:
 | `noaccountmodule` | Login/registration UI |
 | `summaryframemodule` | Dashboard summary view |
 | `svgiconsmodule` | SVG icon definitions |
-| `utilsmodule` | Date utilities |
+| `utilsmodule` | Shared utilities: date helpers, factor array math, leap year constants |
 
 ## UI States (Navigation)
 ```

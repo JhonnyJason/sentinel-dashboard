@@ -26,6 +26,8 @@ applyBaseState["summary"] = ->
 ```
 
 **DOM Connection**: Uses `implicit-dom-connect` to auto-bind DOM elements from pug templates to CoffeeScript globals.
+- Converts kebab-case IDs to camelCase: `#symbol-input` → `symbolInput`
+- Elements become available as globals without explicit `document.getElementById`
 
 **Templating**: Mustache templates embedded in pug, rendered at runtime.
 
@@ -38,7 +40,7 @@ applyBaseState["summary"] = ->
 | Add new currency pair | `configmodule.coffee` -> `shownCurrencyPairLabels` |
 | Modify scoring algorithm | `scorehelper.coffee` |
 | Add new economic area | `economicareasmodule.coffee` |
-| Change chart behavior | `seasonalityframemodule.coffee` |
+| Change chart behavior | `seasonalityframemodule/chartfun.coffee` |
 | Modify auth flow | `accountmodule.coffee`, `scimodule.coffee` |
 | Add new UI state | `uistatemodule.coffee`, `navtriggers.coffee` |
 
@@ -74,11 +76,14 @@ applyBaseState["summary"] = ->
 **Deployment**: Automated via output submodule push.
 
 **Progress**:
-- [x] Connect to datahub for real historic data (testFetch works)
+- [x] Connect to datahub for real historic data
 - [x] Transform datahub response to cache structure (datacache.coffee)
-- [ ] Implement seasonality composite calculation:
-  - Average daily return method (exists, needs real data)
-  - Fourier method
+- [x] Symbol search combobox with fuzzy filtering
+- [x] Refactor: consolidated date/factor utilities into utilsmodule
+- [x] Refactor: clean module boundaries (seasonality internal to marketdatamodule)
+- [ ] Define marketdatamodule interface for seasonalityframemodule
+- [ ] Wire datacache → marketdatamodule → seasonalityframemodule
+- [ ] Implement seasonality composite calculation with real data
 - [ ] Display composite + latest move in chart
 
 ## Datahub Integration
@@ -122,4 +127,84 @@ keyToHistory = {
 - Lazy loading: fetches on first access, retries on failure
 - Error handling: silent empty array (option 1), no error propagation
 
-**Next step**: Wire datacache into marketdatamodule for seasonality composite calculation.
+**Next step**: Define marketdatamodule interface, then wire datacache into it.
+
+## Module Dependencies (Seasonality Feature)
+
+```
+seasonalityframemodule
+  ├─ comboboxfun (symbol combobox UI)
+  │    └─ symboloptions (search logic)
+  ├─ chartfun (uPlot chart rendering)
+  │    └─ utilsmodule (date helpers)
+  ├─ utilsmodule (dates, factors, FEB29/FEB28 constants)
+  └─ marketdatamodule (data interface - to be defined)
+
+marketdatamodule
+  ├─ datacache (fetch + cache)
+  ├─ seasonality (calculation algorithms)
+  └─ [sampledata] (mock data, commented out)
+
+datacache
+  ├─ utilsmodule (getDaysOfYear, getDayOfYear)
+  └─ scimodule (getEodData → datahub)
+
+seasonality (internal to marketdatamodule)
+  └─ utilsmodule (isLeapYear, FEB29/28, factor functions)
+```
+
+**Design principles**:
+- seasonalityframemodule only knows about marketdatamodule for data, not the internals
+- comboboxfun and chartfun are stateless UI components with callback/parameter interfaces
+
+## Seasonality Frame Module Structure
+
+**Files** (refactored for separation of concerns):
+- `seasonalityframemodule.coffee` - Coordinator: state, data retrieval, wiring
+- `comboboxfun.coffee` - Combobox UI: filtering, keyboard nav, dropdown
+- `chartfun.coffee` - uPlot chart rendering and axis interactions
+- `symboloptions.coffee` - Search logic with rate limiting
+- `seasonalityframe.pug` - HTML structure
+- `styles.styl` - Styling
+
+**Module Interfaces**:
+```coffee
+# comboboxfun - Combobox class
+box = new Combobox({ inputEl, dropdownEl, optionsLimit, minSearchLength })
+box.onSelect(callback)           # Attach selection handler
+box.setDefaultOptions()          # Sets fullOptions from symboloptions.defaultTop100
+box.provideSearchOptions(opts)   # Sets fullOptions to server results, refilters
+
+# chartfun
+drawChart(container, xAxisData, seasonalityData, latestData)
+resetChart(container)
+
+# symboloptions
+dynamicSearch(searchString, limit, requester)  # Rate-limited, calls requester.provideSearchOptions(results)
+defaultTop100                                   # Array of {symbol, name}
+```
+
+**Combobox Behavior**:
+- Constructor calls `setDefaultOptions()` → loads `defaultTop100` into `fullOptions`
+- `currentOptions` derived from `fullOptions`: sliced to `optionsLimit` (no query) or fuzzy-ranked (with query)
+- Fuzzy scoring: counts matched chars in order, sorts by best score (symbol vs name)
+- At 3+ chars, triggers `dynamicSearch(query, limit+20, this)` → server-side search
+- Server results arrive via `provideSearchOptions(opts)` → replaces `fullOptions`, refilters
+- Query too short → `setDefaultOptions()` resets to defaults
+- Keyboard: arrows navigate, Enter selects, Escape closes
+- Rate limiting: 200ms cooldown on server requests (in symboloptions)
+
+**Data flow**:
+```
+User types → Combobox.onInput → updateCurrentOptions (fuzzy rank from fullOptions)
+                              → if query < minSearchLength: setDefaultOptions()
+                              → if query >= minSearchLength: dynamicSearch(query, limit, this)
+                                    ↓
+                              scimodule.getSymbolOptions(searchString, limit)
+                                    ↓
+                              Combobox.provideSearchOptions(results) → fullOptions = results → refilter
+
+User selects → Combobox calls selectionCallback(symbol)
+             → seasonalityframemodule.onStockSelected
+             → retrieveRelevantData → chartfun.drawChart
+```
