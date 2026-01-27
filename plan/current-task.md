@@ -15,6 +15,6 @@ Symboloptions should implement this dynamic retrieval of options depending on th
 
 ## Sub-Tasks
 - [x] Add combo-box into the structure for flexible search-selecting
-- [ ] implement sample flow of search-selecting with dynamically requested data
-- [ ] implement top-down flow from user selecting what to analyse to calling the correct data retrieval interface
-- [ ] Test and fix user choices flows
+- [x] implement sample flow of search-selecting with dynamically requested data
+- [x] implement top-down flow from user selecting what to analyse to calling the correct data retrieval interface
+- [x] Test and fix user choices flows
