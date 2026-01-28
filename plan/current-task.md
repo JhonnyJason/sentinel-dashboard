@@ -15,8 +15,8 @@ Main Modules for the frames:
 
 
 ## Sub-Tasks
-- [ ] Add entries to menu
-- [ ] add UI states in the styles for visibility on the correct state
-- [ ] add uistates to uistatemodule with corresponding application of UI states
-- [ ] add corresponding navtriggers
+- [x] Add entries to menu
+- [x] add UI states in the styles for visibility on the correct state
+- [x] add uistates to uistatemodule with corresponding application of UI states
+- [x] add corresponding navtriggers
 - [ ] Craft nice inoffensive and nicely styled placeholder in placeholderframe.pug telling the user that this featuer will be coming soon

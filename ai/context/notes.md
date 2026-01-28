@@ -76,11 +76,11 @@ applyBaseState["summary"] = ->
 **Placement**: Between "Saisonalität" and "Account" in navigation.
 
 **Sub-tasks**:
-- [ ] Add entries to menu (sidenavmodule)
-- [ ] Add UI states in styles for visibility
-- [ ] Add uistates to uistatemodule
-- [ ] Add corresponding navtriggers
-- [ ] Create placeholder frame with "coming soon" message
+- [x] Add entries to menu (sidenavmodule)
+- [x] Add UI states in styles for visibility
+- [x] Add uistates to uistatemodule
+- [x] Add corresponding navtriggers
+- [x] Create placeholder frame with "coming soon" message
 
 ---
 
