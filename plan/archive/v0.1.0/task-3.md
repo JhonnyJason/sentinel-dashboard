@@ -19,4 +19,4 @@ Main Modules for the frames:
 - [x] add UI states in the styles for visibility on the correct state
 - [x] add uistates to uistatemodule with corresponding application of UI states
 - [x] add corresponding navtriggers
-- [ ] Craft nice inoffensive and nicely styled placeholder in placeholderframe.pug telling the user that this featuer will be coming soon
+- [x] Craft nice inoffensive and nicely styled placeholder in placeholderframe.pug telling the user that this featuer will be coming soon

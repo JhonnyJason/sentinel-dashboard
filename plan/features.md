@@ -7,7 +7,7 @@
 - [x] Seasonality Composite Fourier
 - [x] Chart rendering and Display
 - [x] Predefined searchable choices for Stock Symbols (S&P 500)
-- [ ] Menu Point and frame placeholders
+- [x] Menu Point and frame placeholders
 - [ ] Chart Legend + Improvements
 - [ ] Seasonality Backtesting Summary
 - [ ] Seasonality Backtesting Details
