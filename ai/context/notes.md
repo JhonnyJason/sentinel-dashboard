@@ -64,7 +64,27 @@ applyBaseState["summary"] = ->
 - `uplot` - Lightweight charting
 - `fft.js` - Fourier transform for seasonality
 
-## Current Focus: Seasonality Analysis
+## Current Focus: UI Expansion (Task 3)
+
+**Goal**: Add navigation menu entries and placeholder frames for upcoming features.
+
+**New frames needed**:
+- Event Screener (`eventscreenerframe`)
+- Forex Screener (`forexscreenerframe`)
+- Börsen Ampel (`trafficlightframe`)
+
+**Placement**: Between "Saisonalität" and "Account" in navigation.
+
+**Sub-tasks**:
+- [ ] Add entries to menu (sidenavmodule)
+- [ ] Add UI states in styles for visibility
+- [ ] Add uistates to uistatemodule
+- [ ] Add corresponding navtriggers
+- [ ] Create placeholder frame with "coming soon" message
+
+---
+
+## Completed: Seasonality Analysis
 
 **Goal**: Finish the seasonality feature with real data from datahub.
 
@@ -85,33 +105,7 @@ applyBaseState["summary"] = ->
 - [x] Wire datacache → marketdatamodule → seasonalityframemodule
 - [x] Implement seasonality composite calculation with real data
 - [x] Display composite + latest move in chart
-- [ ] **BUG**: Chart breaks with certain datasets (NaN values) - debugging in progress
-
-## Current Bug Hunt: Chart Breaking with NaN Values
-
-**Symptom**: Chart breaks silently with larger/certain datasets. No error shown.
-
-**Investigation**:
-1. Added `scanForFreakValues()` validation in `chartfun.coffee` before uPlot draw
-2. Found: `seasonalityData` has NaN at first 432 indices (Average method) or 728 indices (Fourier)
-3. Added validation in `datacache.coffee` at `getHistoricCloseData` output
-4. Found: Later historic years (from ~year 10+) have `undefined` values in cache
-
-**Hypothesis**: Problem in `digestRemoteData()` - when server sends 31 years but we only process/store correctly for first ~10 years.
-
-**Debug logging added**:
-- `chartfun.coffee`: `scanForFreakValues()` - checks null (info), undefined/NaN (warn with indices)
-- `datacache.coffee`: `scanCacheData()` - logs per-year data quality
-- `datacache.coffee`: `digestRemoteData()` - logs server response and per-year fill counts
-
-**Next step**: Check logs to see if server sends correct data but we store it wrong, or if data arrives incomplete.
-
-**Files with debug instrumentation**:
-- `seasonalityframemodule/chartfun.coffee` - validateChartData(), uses utl.scanForFreakValues()
-- `marketdatamodule/datacache.coffee` - scanCacheData(), digestRemoteData() logging
-
-**Fixed so far**:
-- Leap-year adjustment bug in `prepareChartData` (benign)
+- [x] Fixed chart NaN bug (year indexing in digestRemoteData)
 
 ## Datahub Integration
 
