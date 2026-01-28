@@ -81,10 +81,37 @@ applyBaseState["summary"] = ->
 - [x] Symbol search combobox with fuzzy filtering
 - [x] Refactor: consolidated date/factor utilities into utilsmodule
 - [x] Refactor: clean module boundaries (seasonality internal to marketdatamodule)
-- [ ] Define marketdatamodule interface for seasonalityframemodule
-- [ ] Wire datacache → marketdatamodule → seasonalityframemodule
-- [ ] Implement seasonality composite calculation with real data
-- [ ] Display composite + latest move in chart
+- [x] Define marketdatamodule interface for seasonalityframemodule
+- [x] Wire datacache → marketdatamodule → seasonalityframemodule
+- [x] Implement seasonality composite calculation with real data
+- [x] Display composite + latest move in chart
+- [ ] **BUG**: Chart breaks with certain datasets (NaN values) - debugging in progress
+
+## Current Bug Hunt: Chart Breaking with NaN Values
+
+**Symptom**: Chart breaks silently with larger/certain datasets. No error shown.
+
+**Investigation**:
+1. Added `scanForFreakValues()` validation in `chartfun.coffee` before uPlot draw
+2. Found: `seasonalityData` has NaN at first 432 indices (Average method) or 728 indices (Fourier)
+3. Added validation in `datacache.coffee` at `getHistoricCloseData` output
+4. Found: Later historic years (from ~year 10+) have `undefined` values in cache
+
+**Hypothesis**: Problem in `digestRemoteData()` - when server sends 31 years but we only process/store correctly for first ~10 years.
+
+**Debug logging added**:
+- `chartfun.coffee`: `scanForFreakValues()` - checks null (info), undefined/NaN (warn with indices)
+- `datacache.coffee`: `scanCacheData()` - logs per-year data quality
+- `datacache.coffee`: `digestRemoteData()` - logs server response and per-year fill counts
+
+**Next step**: Check logs to see if server sends correct data but we store it wrong, or if data arrives incomplete.
+
+**Files with debug instrumentation**:
+- `seasonalityframemodule/chartfun.coffee` - validateChartData(), uses utl.scanForFreakValues()
+- `marketdatamodule/datacache.coffee` - scanCacheData(), digestRemoteData() logging
+
+**Fixed so far**:
+- Leap-year adjustment bug in `prepareChartData` (benign)
 
 ## Datahub Integration
 
