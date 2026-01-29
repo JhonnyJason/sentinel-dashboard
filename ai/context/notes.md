@@ -50,11 +50,10 @@ applyBaseState["summary"] = ->
 - Login/logout with session management
 - Economic area display with live data
 - Currency pair trend scoring
-- Seasonality charting (basic)
+- Seasonality charting with real data and UI state management
 
 **Incomplete/TODO areas** (found in code):
-- `seasonalityframemodule`: Time axis handling, selection behavior
-- `marketdatamodule`: `getSeasonalityComposite` returns hardcoded data
+- `seasonalityframemodule`: Selection behavior for date ranges
 - Service worker: Minimal implementation
 
 ### External Dependencies Worth Knowing
@@ -64,23 +63,31 @@ applyBaseState["summary"] = ->
 - `uplot` - Lightweight charting
 - `fft.js` - Fourier transform for seasonality
 
-## Current Focus: UI Expansion (Task 3)
+## Current Focus: Seasonality Frame Polish
+
+**Goal**: Complete UI state management and interactivity for seasonality chart.
+
+**Completed**:
+- [x] Chart visibility state classes (chart-active/chart-inactive)
+- [x] Close chart button wiring with full state reset
+- [x] Timeframe select reset to default on close
+- [x] Cursor indicator showing date (dd.mm.yyyy) on hover
+
+**Next steps** (potential):
+- [ ] Selection behavior for date ranges (start/end picking)
+- [ ] Backtesting tab wiring
+- [ ] Chart components tab content
+
+---
+
+## Completed: UI Expansion (Task 3)
 
 **Goal**: Add navigation menu entries and placeholder frames for upcoming features.
 
-**New frames needed**:
+**New frames added**:
 - Event Screener (`eventscreenerframe`)
 - Forex Screener (`forexscreenerframe`)
 - Börsen Ampel (`trafficlightframe`)
-
-**Placement**: Between "Saisonalität" and "Account" in navigation.
-
-**Sub-tasks**:
-- [x] Add entries to menu (sidenavmodule)
-- [x] Add UI states in styles for visibility
-- [x] Add uistates to uistatemodule
-- [x] Add corresponding navtriggers
-- [x] Create placeholder frame with "coming soon" message
 
 ---
 
@@ -181,12 +188,25 @@ seasonality (internal to marketdatamodule)
 ## Seasonality Frame Module Structure
 
 **Files** (refactored for separation of concerns):
-- `seasonalityframemodule.coffee` - Coordinator: state, data retrieval, wiring
+- `seasonalityframemodule.coffee` - Coordinator: state, data retrieval, UI class management
 - `comboboxfun.coffee` - Combobox UI: filtering, keyboard nav, dropdown
-- `chartfun.coffee` - uPlot chart rendering and axis interactions
+- `chartfun.coffee` - uPlot chart rendering, axis interactions, cursor indicator
 - `symboloptions.coffee` - Search logic with rate limiting
 - `seasonalityframe.pug` - HTML structure
-- `styles.styl` - Styling
+- `styles.styl` - Main styling + imports
+- `visibility.styl` - Conditional visibility rules based on state classes
+
+**UI State Classes** (on `#seasonalityframe`):
+- `.chart-inactive` (default): Shows instructions, hides chart and close button
+- `.chart-active`: Shows chart (`#seasonality-chart`) and close button
+- `.check-components`: Enables chart components tab (default when chart active)
+- `.backtesting`: Enables backtesting tab and details (future feature)
+
+**State transitions**:
+```
+chart-inactive → (user selects symbol) → chart-active + check-components
+chart-active   → (user clicks close)   → chart-inactive (reset all state)
+```
 
 **Module Interfaces**:
 ```coffee
@@ -199,11 +219,17 @@ box.provideSearchOptions(opts)   # Sets fullOptions to server results, refilters
 # chartfun
 drawChart(container, xAxisData, seasonalityData, latestData)
 resetChart(container)
+initLegend(container)            # Wire up legend checkboxes
 
 # symboloptions
 dynamicSearch(searchString, limit, requester)  # Rate-limited, calls requester.provideSearchOptions(results)
 defaultTop100                                   # Array of {symbol, name}
 ```
+
+**Cursor Indicator**:
+- `#cursor-indicator` with `.location` span shows current date (dd.mm.yyyy)
+- Visible (`.shown` class) when cursor is over chart
+- Hidden when cursor leaves chart or chart is reset
 
 **Combobox Behavior**:
 - Constructor calls `setDefaultOptions()` → loads `defaultTop100` into `fullOptions`
@@ -227,5 +253,12 @@ User types → Combobox.onInput → updateCurrentOptions (fuzzy rank from fullOp
 
 User selects → Combobox calls selectionCallback(symbol)
              → seasonalityframemodule.onStockSelected
-             → retrieveRelevantData → chartfun.drawChart
+             → resetAndRender → retrieveRelevantData → chartfun.drawChart
+             → setChartActive() (adds chart-active, check-components classes)
+
+User closes → onCloseChart
+            → resetSeasonalityState → chartfun.resetChart
+            → clear symbol input, selected symbol, currentSelectedStock
+            → resetTimeframeSelect (back to "5 Jahre" only)
+            → setChartInactive() (adds chart-inactive, removes chart-active/check-components)
 ```

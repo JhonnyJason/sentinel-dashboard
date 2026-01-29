@@ -13,6 +13,7 @@ There are small optimizations to be done with the chart.
 - [x] Full crosshair on cursor
 - [x] Time-Axis Keep months but don't duplicate them
 - [x] Plan strategy for adding the legend (there is one already baked into uplot)
-- [ ] Layout Overhaul seasonalityframemodule 
+- [x] Layout Overhaul seasonalityframemodule
+- [ ] Wire up and style new UI states
 - [ ] Update Legend: Track date of cursor (without year) in legnd
 - [ ] Update Legend: Option to hide schown artefacts
