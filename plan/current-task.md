@@ -14,6 +14,6 @@ There are small optimizations to be done with the chart.
 - [x] Time-Axis Keep months but don't duplicate them
 - [x] Plan strategy for adding the legend (there is one already baked into uplot)
 - [x] Layout Overhaul seasonalityframemodule
-- [ ] Wire up and style new UI states
-- [ ] Update Legend: Track date of cursor (without year) in legnd
-- [ ] Update Legend: Option to hide schown artefacts
+- [x] Wire up and style new UI states
+- [x] Update Legend: Track date of cursor (without year) in legnd
+- [x] Update Legend: Option to hide schown artefacts

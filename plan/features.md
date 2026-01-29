@@ -8,7 +8,7 @@
 - [x] Chart rendering and Display
 - [x] Predefined searchable choices for Stock Symbols (S&P 500)
 - [x] Menu Point and frame placeholders
-- [ ] Chart Legend + Improvements
+- [x] Chart Legend + Improvements
 - [ ] Seasonality Backtesting Summary
 - [ ] Seasonality Backtesting Details
 - [ ] Updated ForexScoring

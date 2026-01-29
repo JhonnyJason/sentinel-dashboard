@@ -72,11 +72,15 @@ applyBaseState["summary"] = ->
 - [x] Close chart button wiring with full state reset
 - [x] Timeframe select reset to default on close
 - [x] Cursor indicator showing date (dd.mm.yyyy) on hover
+- [x] Chart components as interactive legend (toggle series visibility)
+- [x] Years indicator updates on symbol/timeframe selection
+- [x] Fourier regression on-demand calculation (experimental series)
+- [x] Dynamic series index adjustment (latestData always on top)
 
 **Next steps** (potential):
 - [ ] Selection behavior for date ranges (start/end picking)
 - [ ] Backtesting tab wiring
-- [ ] Chart components tab content
+- [ ] Loading indicator for Fourier calculation
 
 ---
 
@@ -217,9 +221,9 @@ box.setDefaultOptions()          # Sets fullOptions from symboloptions.defaultTo
 box.provideSearchOptions(opts)   # Sets fullOptions to server results, refilters
 
 # chartfun
-drawChart(container, xAxisData, seasonalityData, latestData)
+drawChart(container, xAxisData, adrData, fourierData, latestData)  # fourierData can be null
 resetChart(container)
-initLegend(container)            # Wire up legend checkboxes
+toggleSeriesVisibility(seriesIdx, isVisible)  # Show/hide series via uPlot
 
 # symboloptions
 dynamicSearch(searchString, limit, requester)  # Rate-limited, calls requester.provideSearchOptions(results)
@@ -253,12 +257,36 @@ User types → Combobox.onInput → updateCurrentOptions (fuzzy rank from fullOp
 
 User selects → Combobox calls selectionCallback(symbol)
              → seasonalityframemodule.onStockSelected
-             → resetAndRender → retrieveRelevantData → chartfun.drawChart
+             → resetAndRender → retrieveRelevantData (fetches ADR only)
+             → prepareChartData → redrawChart → chartfun.drawChart
+             → updateYearsIndicator (sets #aggregation-years-indicator)
              → setChartActive() (adds chart-active, check-components classes)
+
+User clicks legend series → onLegendSeriesClick
+  - Regular series (ADR/latest): toggleSeriesVisibility via uPlot
+  - Experimental (Fourier):
+    → ensureFourierData (fetch + prepare if not cached)
+    → redrawChart (rebuilds chart with/without Fourier)
+    → updateSeriesIndices (latestData index: 2 or 3)
 
 User closes → onCloseChart
             → resetSeasonalityState → chartfun.resetChart
             → clear symbol input, selected symbol, currentSelectedStock
+            → reset Fourier visibility class
             → resetTimeframeSelect (back to "5 Jahre" only)
             → setChartInactive() (adds chart-inactive, removes chart-active/check-components)
 ```
+
+**State Variables** (seasonalityframemodule):
+```coffee
+adrAggregation   # Average Daily Return - prepared for 2-year display
+frAggregation    # Fourier Regression - on-demand, cached until reset
+latestData       # Current + last year price data - prepared for 2-year display
+xAxisData        # Time axis for chart
+```
+
+**Chart Components (legend)** (`chart-components.pug`):
+- `.legend-series` elements with `series-index` attribute
+- Click toggles `.visible` class and series visibility
+- `.experimental` class marks Fourier (triggers on-demand calculation)
+- `#aggregation-years-indicator` shows current timeframe (5/10/15/etc)
