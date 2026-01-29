@@ -203,12 +203,12 @@ seasonality (internal to marketdatamodule)
 **UI State Classes** (on `#seasonalityframe`):
 - `.chart-inactive` (default): Shows instructions, hides chart and close button
 - `.chart-active`: Shows chart (`#seasonality-chart`) and close button
-- `.check-components`: Enables chart components tab (default when chart active)
+- `.analysing`: Enables chart components tab (default when chart active)
 - `.backtesting`: Enables backtesting tab and details (future feature)
 
 **State transitions**:
 ```
-chart-inactive → (user selects symbol) → chart-active + check-components
+chart-inactive → (user selects symbol) → chart-active + analysing
 chart-active   → (user clicks close)   → chart-inactive (reset all state)
 ```
 
@@ -260,7 +260,7 @@ User selects → Combobox calls selectionCallback(symbol)
              → resetAndRender → retrieveRelevantData (fetches ADR only)
              → prepareChartData → redrawChart → chartfun.drawChart
              → updateYearsIndicator (sets #aggregation-years-indicator)
-             → setChartActive() (adds chart-active, check-components classes)
+             → setChartActive() (adds chart-active, analysing classes)
 
 User clicks legend series → onLegendSeriesClick
   - Regular series (ADR/latest): toggleSeriesVisibility via uPlot
@@ -274,7 +274,7 @@ User closes → onCloseChart
             → clear symbol input, selected symbol, currentSelectedStock
             → reset Fourier visibility class
             → resetTimeframeSelect (back to "5 Jahre" only)
-            → setChartInactive() (adds chart-inactive, removes chart-active/check-components)
+            → setChartInactive() (adds chart-inactive, removes chart-active/analysing)
 ```
 
 **State Variables** (seasonalityframemodule):

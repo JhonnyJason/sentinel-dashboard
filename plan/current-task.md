@@ -1,19 +1,10 @@
-# Task 4
-Implement Chart Improvements + Legend
+# Task 5
+Implement Seasonality Backtesting
 
 ## Details
-There are small optimizations to be done with the chart.
-- Full crosshair on cursor
-- Add legend 
-- Legend: Track date of cursor (without year) in legnd
-- Legend: Option to hide schown artefacts
-- Time-Axis Keep months but don't duplicate them
+Automated backtesting for a chosen trade as date to date move that might have happened each historic year is the main feature to be implemented.
+Here the User shall select the timeframe from which date to which date he wants to run the backtesting. Here we want to implement the rough flow of this interaction 
 
-## Sub-Tasks
-- [x] Full crosshair on cursor
-- [x] Time-Axis Keep months but don't duplicate them
-- [x] Plan strategy for adding the legend (there is one already baked into uplot)
-- [x] Layout Overhaul seasonalityframemodule
-- [x] Wire up and style new UI states
-- [x] Update Legend: Track date of cursor (without year) in legnd
-- [x] Update Legend: Option to hide schown artefacts
+- selection of timeframe by the user triggers the backtesting stub (real calculations implemented later) and the UX flows
+- UX flows: adjust the UI state (add the backtesting class to the #seasonalityframe, remove the analysing class)
+- Style, test and fix the basic UX flows
