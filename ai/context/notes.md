@@ -63,24 +63,42 @@ applyBaseState["summary"] = ->
 - `uplot` - Lightweight charting
 - `fft.js` - Fourier transform for seasonality
 
-## Current Focus: Seasonality Frame Polish
+## Current Focus: Task 6 - Backtesting Implementation
 
-**Goal**: Complete UI state management and interactivity for seasonality chart.
+**Goal**: Implement actual backtesting calculations for selected date ranges.
 
 **Completed**:
-- [x] Chart visibility state classes (chart-active/chart-inactive)
-- [x] Close chart button wiring with full state reset
-- [x] Timeframe select reset to default on close
-- [x] Cursor indicator showing date (dd.mm.yyyy) on hover
-- [x] Chart components as interactive legend (toggle series visibility)
-- [x] Years indicator updates on symbol/timeframe selection
-- [x] Fourier regression on-demand calculation (experimental series)
-- [x] Dynamic series index adjustment (latestData always on top)
+- [x] Selection behavior wired (chartfun.onRangeSelected → seasonalityframemodule)
+- [x] Index normalization (normalizeSelectionIndices handles 3 cases)
+- [x] UI state transitions (analysing ↔ backtesting)
+- [x] Backtesting UI placeholders ready
+- [x] HLC sequence extraction (both regular and overlapping year cases)
+- [x] Per-sequence backtesting calculation (backtestSequence)
 
-**Next steps** (potential):
-- [ ] Selection behavior for date ranges (start/end picking)
-- [ ] Backtesting tab wiring
-- [ ] Loading indicator for Fourier calculation
+**In Progress**:
+- [ ] Aggregate results across all years (avg/median changeF, max rise/drop)
+- [ ] Direction detection (Long vs Short based on average)
+- [ ] Format results for UI display (factors → percentages)
+
+**Backtesting Module Structure** (`seasonalityframemodule/backtesting.coffee`):
+```
+runBacktesting(dataPerYear, startIdx, endIdx)
+  ├─ startIdx < 0 → runOverlappingBacktest
+  └─ else → runBacktest
+
+Both call:
+  getTradeDaySequences[Overlapped] → extract HLC sequences per year
+  backtestSequence(seq) → { changeF, maxRiseF, maxDropF, warn }
+
+Next: aggregate backtestResults[] → final UI results
+```
+
+**Factor Convention**:
+- All intermediate values stored as factors (price / startPrice)
+- `changeF`: end/start (1.05 = +5%)
+- `maxRiseF`: highestHigh/start
+- `maxDropF`: lowestLow/start
+- Convert to percentage for display: `(factor - 1) * 100`
 
 ---
 
@@ -290,3 +308,20 @@ xAxisData        # Time axis for chart
 - Click toggles `.visible` class and series visibility
 - `.experimental` class marks Fourier (triggers on-demand calculation)
 - `#aggregation-years-indicator` shows current timeframe (5/10/15/etc)
+
+## Index Flow (Chart → Backtesting)
+
+```
+Chart selection (raw 2-year indices)
+  ↓ normalizeSelectionIndices (seasonalityframemodule)
+Normalized indices (365-day year, startIdx negative if overlapping)
+  ↓ denormalizeIndex (backtesting)
+Actual year indices (accounts for leap years)
+  ↓ extractSequence / extractOverlappingSequence
+HLC sequences per year
+```
+
+| Selection Case | startIdx | endIdx | Handler |
+|----------------|----------|--------|---------|
+| Same year | 0-364 | 0-364 | runBacktest |
+| Year boundary | -365..-1 | 0-364 | runOverlappingBacktest |
