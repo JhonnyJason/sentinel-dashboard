@@ -1,7 +1,7 @@
 # Status
 Phase: Implementing
 Version: v0.1.0
-TaskNr: 5
+TaskNr: 6
 
 ## Current Implementation State
 The dashboard had been created in my coffeescript build-system.

@@ -9,8 +9,8 @@
 - [x] Predefined searchable choices for Stock Symbols (S&P 500)
 - [x] Menu Point and frame placeholders
 - [x] Chart Legend + Improvements
+- [x] Seasonality Backtesting display Summary
 - [ ] Seasonality Backtesting
-- [ ] Seasonality Backtesting display Summary
 - [ ] Seasonality Backtesting display Details
 - [ ] Updated ForexScoring
 - [ ] Refining to presentable first release (Warning-Banner "This is Beta", fix bugs, mark experimental features)
