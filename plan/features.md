@@ -11,6 +11,6 @@
 - [x] Chart Legend + Improvements
 - [x] Seasonality Backtesting display Summary
 - [x] Seasonality Backtesting
-- [ ] Seasonality Backtesting display Details
+- [x] Seasonality Backtesting display Details
 - [ ] Updated ForexScoring
 - [ ] Refining to presentable first release (Warning-Banner "This is Beta", fix bugs, mark experimental features)
