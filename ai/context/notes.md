@@ -63,42 +63,45 @@ applyBaseState["summary"] = ->
 - `uplot` - Lightweight charting
 - `fft.js` - Fourier transform for seasonality
 
-## Current Focus: Task 6 - Backtesting Implementation
+## Completed: Task 6 - Backtesting Implementation
 
 **Goal**: Implement actual backtesting calculations for selected date ranges.
 
-**Completed**:
+**All completed**:
 - [x] Selection behavior wired (chartfun.onRangeSelected → seasonalityframemodule)
 - [x] Index normalization (normalizeSelectionIndices handles 3 cases)
 - [x] UI state transitions (analysing ↔ backtesting)
-- [x] Backtesting UI placeholders ready
 - [x] HLC sequence extraction (both regular and overlapping year cases)
 - [x] Per-sequence backtesting calculation (backtestSequence)
+- [x] Aggregate results across all years (avg/median changeF, max rise/drop)
+- [x] Direction detection (Long vs Short based on average)
+- [x] Win rate calculation
+- [x] Format results for UI display (factors → percentages)
+- [x] Summary panel rendering (direction, timeframe, win rate pie, stats)
+- [x] Details table rendering with yearly breakdown
+- [x] Sortable table columns (year, profit, max rise, max drop)
+- [x] Warning display for anomalous years
 
-**In Progress**:
-- [ ] Aggregate results across all years (avg/median changeF, max rise/drop)
-- [ ] Direction detection (Long vs Short based on average)
-- [ ] Format results for UI display (factors → percentages)
-
-**Backtesting Module Structure** (`seasonalityframemodule/backtesting.coffee`):
+**Backtesting Result Object**:
+```coffee
+{
+    directionString    # "Long" or "Short"
+    timeframeString    # "[DD.MM. - DD.MM.]"
+    winRate            # 0-100 percentage
+    maxRise            # percentage
+    maxDrop            # percentage
+    averageProfit      # percentage (sign-adjusted for direction)
+    medianProfit       # percentage (sign-adjusted for direction)
+    daysInTrade        # number
+    warn               # boolean (any year has anomaly)
+    yearlyResults      # [{ year, profitP, maxRiseP, maxDropP, warn }, ...]
+}
 ```
-runBacktesting(dataPerYear, startIdx, endIdx)
-  ├─ startIdx < 0 → runOverlappingBacktest
-  └─ else → runBacktest
 
-Both call:
-  getTradeDaySequences[Overlapped] → extract HLC sequences per year
-  backtestSequence(seq) → { changeF, maxRiseF, maxDropF, warn }
-
-Next: aggregate backtestResults[] → final UI results
-```
-
-**Factor Convention**:
-- All intermediate values stored as factors (price / startPrice)
-- `changeF`: end/start (1.05 = +5%)
-- `maxRiseF`: highestHigh/start
-- `maxDropF`: lowestLow/start
-- Convert to percentage for display: `(factor - 1) * 100`
+**Table Sorting** (seasonalityframemodule state):
+- `sortColumn`: "year" | "profit" | "maxRise" | "maxDrop"
+- `sortAscending`: toggle on same column, start ascending on new column
+- CSS classes: `.sortable`, `.sorted`, `.asc`, `.desc`
 
 ---
 
@@ -222,7 +225,7 @@ seasonality (internal to marketdatamodule)
 - `.chart-inactive` (default): Shows instructions, hides chart and close button
 - `.chart-active`: Shows chart (`#seasonality-chart`) and close button
 - `.analysing`: Enables chart components tab (default when chart active)
-- `.backtesting`: Enables backtesting tab and details (future feature)
+- `.backtesting`: Enables backtesting summary tab and details table
 
 **State transitions**:
 ```
@@ -293,6 +296,16 @@ User closes → onCloseChart
             → reset Fourier visibility class
             → resetTimeframeSelect (back to "5 Jahre" only)
             → setChartInactive() (adds chart-inactive, removes chart-active/analysing)
+
+User selects date range on chart → onChartRangeSelected
+  → normalizeSelectionIndices (convert 2-year chart idx to 365-day normalized)
+  → mData.getHistoryHLC → runBacktesting
+  → updateBacktestingUI (summary panel + details table)
+  → setBacktestingActive()
+
+User clicks table header → onSortColumnClick
+  → toggle sortAscending or set new sortColumn
+  → renderBacktestingTable() (re-sort and redraw)
 ```
 
 **State Variables** (seasonalityframemodule):
