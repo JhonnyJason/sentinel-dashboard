@@ -14,7 +14,7 @@ The relevant files are all in sources/source/seasonalityframemodule/
 
 ## Sub-Tasks
 - [x] render the table
-- [ ] wire up the event listeners for sorting
-- [ ] represent the sorting state appripriately with visible arrow in the <th> element
-- [ ] Style the Table appropriately
-- [ ] Test and fix issues in function structure and style
+- [x] wire up the event listeners for sorting
+- [x] represent the sorting state appripriately with visible arrow in the <th> element
+- [x] Style the Table appropriately
+- [x] Test and fix issues in function structure and style
