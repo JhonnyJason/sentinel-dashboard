@@ -12,6 +12,6 @@
 - [x] Seasonality Backtesting display Summary
 - [x] Seasonality Backtesting
 - [x] Seasonality Backtesting display Details
-- [ ] Add Button for quick navigation of chart start position
+- [x] Add Button for quick navigation of chart start position
 - [ ] Updated ForexScoring
 - [ ] Refining to presentable first release (Warning-Banner "This is Beta", fix bugs, mark experimental features)

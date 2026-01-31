@@ -338,3 +338,50 @@ HLC sequences per year
 |----------------|----------|--------|---------|
 | Same year | 0-364 | 0-364 | runBacktest |
 | Year boundary | -365..-1 | 0-364 | runOverlappingBacktest |
+
+---
+
+## In Progress: Task 8 - ForexScoring Redesign
+
+**Goal**: Replace hardcoded step-functions with parameterized curves for optimization.
+
+**Design document**: `sources/source/currencytrendframemodule/scoring-design.md`
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Raw Value  →  Normalization (per area)  →  Normalized      │
+│                (parameterized curve)         [-3, +3]       │
+├─────────────────────────────────────────────────────────────┤
+│  baseNorm, quoteNorm  →  DifferenceCurve  →  componentScore │
+└─────────────────────────────────────────────────────────────┘
+
+Final: score = wI*inflationScore + wL*interestScore + wG*gdpScore + wC*cotScore
+```
+
+### Fundamental Assumption
+
+Model targets **medium/long-term** trends via **policy response chain**:
+- High inflation → central bank tightens → higher rates → capital inflows → currency strength
+
+### Inflation Normalization (designed)
+
+Per-area **inverted parabola** with:
+- `peak`: Sweet spot inflation (e.g., 4% EUR, 2.5% JPY)
+- `zeroLow`: Lower zero crossing
+- `cutoff`: Switch to linear decay for runaway inflation
+- Output clamped to **[-3, +3]**
+
+```
+normalizeInflation(area, inflation) → [-3, +3]
+```
+
+### Remaining Design Work
+
+- [x] Inflation difference curve: `b×diff + d×diff³` (b=2.78, d=0.248)
+- [x] Interest rate normalization: `a + b×mrr` per area + cubic diff (d=0.05)
+- [x] GDP normalization + difference (same pattern as inflation)
+- [ ] COT normalization + difference (combined index formula)
+- [ ] Review all sign conventions
+- [ ] Define initial parameter values for optimization
