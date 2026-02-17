@@ -105,6 +105,24 @@ applyBaseState["summary"] = ->
 
 ---
 
+## Trafficlight Module (trafficlightframemodule)
+
+**Chart**: SPY price with HYG-EMA state background bands (green/yellow/red/blue).
+
+**Zoom feature** (implemented):
+- Dropdown select: "Maximal", "12 Monate", "6 Monate", "3 Monate"
+- Zoom uses `chartHandle.setScale("x", ...)` — data stays full, only visible range changes
+- `scales.x.range` clamp function prevents panning beyond data boundaries
+- Drag-to-pan on x-axis via mousedown/mousemove/mouseup on `.u-axis` element (same pattern as chartfun)
+- Adaptive axis labels: years only for >2yr range, "Mmm YYYY" for shorter ranges, duplicates suppressed
+
+**Module exports**: `initialize()`, `fetchData()`, `activate()`
+- `initialize()` wires zoom select listener (called at startup)
+- `fetchData()` can be called early (e.g. on login) without rendering
+- `activate()` fetches if needed, then renders chart
+
+---
+
 ## Completed: UI Expansion (Task 3)
 
 **Goal**: Add navigation menu entries and placeholder frames for upcoming features.
