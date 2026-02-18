@@ -1,6 +1,6 @@
 # Status
 Phase: Implementing
-Version: v0.1.2
+Version: v0.1.3
 TaskNr: 9
 
 ## Current Implementation State
