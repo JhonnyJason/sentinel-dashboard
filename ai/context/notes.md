@@ -344,9 +344,9 @@ xAxisData        # Time axis for chart
 
 ```
 Chart selection (raw 2-year indices)
-  ↓ normalizeSelectionIndices (seasonalityframemodule)
+  ↓ realToNonLeapNormIdx (seasonalityframemodule)
 Normalized indices (365-day year, startIdx negative if overlapping)
-  ↓ denormalizeIndex (backtesting)
+  ↓ nonLeapNormToRealIdx (backtesting)
 Actual year indices (accounts for leap years)
   ↓ extractSequence / extractOverlappingSequence
 HLC sequences per year
