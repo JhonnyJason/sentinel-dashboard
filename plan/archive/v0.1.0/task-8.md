@@ -9,9 +9,9 @@ For the picture of what needs to be calculated we draw it from the solution back
 
 - score = i * inflationScore + l * interestScore + g * gdpScore + c * cotScore
 - i, l, g and c are weights that might be adjusted and optimized for
-- inflationScore = InflationDiffCurve(BaseArea.normalizedInflation(), QuoteArea.normalizedInflation())
-- InflationDiffCurve: Here we need to define a parameterized curve for calcuationg a score such that we may optimize the parameters and thus the shape of the curve. Also we need to define a function that is parameterized by the EconomicArea to give us a "normalized" inflationScore which is comparable across Economic Areas -> (adjust for cultural differences^^)
-- interestScore = InterestDiffCurve( BaseArea.data.mrr * BaseArea.mrrF + QuoteArea.data.mrr * QuoteArea.mrrF )
+- inflationScore = inflDiffScore(BaseArea.normalizedInflation(), QuoteArea.normalizedInflation())
+- inflDiffScore: Here we need to define a parameterized curve for calcuationg a score such that we may optimize the parameters and thus the shape of the curve. Also we need to define a function that is parameterized by the EconomicArea to give us a "normalized" inflationScore which is comparable across Economic Areas -> (adjust for cultural differences^^)
+- interestScore = mrrDiffScore( BaseArea.data.mrr * BaseArea.mrrF + QuoteArea.data.mrr * QuoteArea.mrrF )
 - The "parameterized" Curve here will be a polynomial of 3rd degree. Like: interestScore = s*(baseMrrW - quoteMrrW)^3 Where baseMrrW is the weighed mrr from the baseArea here it is a simply factor for the purpose of cultural adjustment and the result is scaled by another weight s.
 - GDP works in exaclty the same way as inflation
 - COT works similar like the Interest Score However we first combine the COT scores into   areaNormalizedCOT = areaCOTF * (areaCOT6 / 33) * (areaCOT36 / 33)^2 and then calculate cotScore = t * (baseAreaNormalizedCOT - quoteAreaNormalizedCOT)^3 where the result is scaled by the weight t.
