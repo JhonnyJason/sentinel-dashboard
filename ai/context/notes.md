@@ -73,7 +73,7 @@ applyBaseState["summary"] = ->
 - [x] UI state transitions (analysing ↔ backtesting)
 - [x] HLC sequence extraction (both regular and overlapping year cases)
 - [x] Per-sequence backtesting calculation (backtestSequence)
-- [x] Aggregate results across all years (avg/median changeF, max rise/drop)
+- [x] Aggregate results across all years (avg/median deltaF, max rise/drop)
 - [x] Direction detection (Long vs Short based on average)
 - [x] Win rate calculation
 - [x] Format results for UI display (factors → percentages)
