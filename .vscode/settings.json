@@ -4,5 +4,6 @@
         "toolset/build/": true,
         "output/*": true,
         "testing/document-root/*": true
-    }
+    },
+    "svg.preview.background": "custom"
 }
