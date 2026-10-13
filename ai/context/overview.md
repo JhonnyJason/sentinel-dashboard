@@ -1,87 +1,60 @@
 # Sentinel Dashboard - Overview
 
 ## Purpose
-A PWA dashboard for retail forex/stock traders to find market edges through:
-1. **Macrodata Analysis** - Economic area scoring for forex pairs
-2. **Seasonality Research** - Historical pattern screening
+PWA dashboard (German UI) for retail forex/stock traders to find market edges:
+macrodata scoring of currency pairs, seasonality research with backtesting,
+event/forex screeners and a market "traffic light".
 
-## System Architecture
-The Sentinel Dashboard is one part of a larger system:
-- **Sentinel Dashboard** (this project) - The UI/PWA
-- **Sentinel Access Manager** - Authentication and access control
-- **Sentinel Backend** - Macrodata aggregation (WebSocket)
-- **Sentinel Datahub** - Historic EOD data aggregation
+## System
+- **Sentinel Dashboard** (this project) - the UI
+- **Access Manager** - auth, accounts, subscriptions (`scimodule`)
+- **Backend** - macrodata over WebSocket (`datamodule`)
+- **Datahub** - historic EOD data (`scimodule.getEodData`) + live prices over WebSocket (`livedatamodule`)
+- **Link Guardian** - external link handling
 
-## Tech Stack
-- **Language**: CoffeeScript (~2700 lines)
-- **Build**: Custom "thingy-build-system" (webpack, pug, stylus)
-- **UI**: Vanilla JS, Mustache templates, uPlot for charts
-- **Auth**: Token-based with SHA256 hashed passwords
-- **Data**: WebSocket connection to backend
+URLs live in `configmodule` (localhost in dev, production hosts when served from the prod origin).
 
-## Module Structure (`sources/source/`)
+## UI States
+`uistatemodule` applies a base state; `navtriggers` + `navhandler` drive navigation.
+States: summary, currencytrend, seasonality, eventscreener, forexscreener,
+optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
+`contentmodule` / `sidenavmodule` switch visible frames per state.
 
-### Core Modules
+## Modules (`sources/source/`)
+
+### Core
 | Module | Purpose |
 |--------|---------|
-| `appcoremodule` | App initialization, navigation state handling, service worker |
-| `configmodule` | Config constants (URLs, currency pairs, timing) |
-| `datamodule` | WebSocket connection to backend, heartbeat |
-| `uistatemodule` | UI state machine (summary/currencytrend/seasonality/account/noaccount) |
-| `navtriggers` | Navigation action wrappers using `navhandler` |
-| `accountmodule` | Authentication flow (login, logout, session refresh) |
-| `scimodule` | Server Communication Interface - HTTP requests to Access Manager |
+| `appcoremodule` | startup, navigation state handling, service worker |
+| `configmodule` | URLs, currency pair list, timing constants |
+| `accountmodule` / `scimodule` | auth flow / HTTP to Access Manager + Datahub |
+| `datamodule` | macrodata WebSocket + heartbeat, event list |
+| `livedatamodule` | live price WebSocket to Datahub, per-symbol listeners |
+| `statemodule` | persisted app state (localStorage) with change listeners |
+| `utilsmodule` | date/leap-year helpers, factor math, weekday adjustments |
 
-### Feature Modules
+### Market data
 | Module | Purpose |
 |--------|---------|
-| `economicareamodule` | Economic area data (Eurozone, USA, Japan, UK, etc.) with indicators |
-| `currencytrendframemodule` | Currency pair scoring based on economic data |
-| `scorehelper` | Scoring algorithms for interest, inflation, GDP, COT |
-| `seasonalityframemodule` | Seasonality feature coordinator - state, data retrieval, wiring |
-| `seasonalityframemodule/comboboxfun` | `Combobox` class - fuzzy-ranked filtering, keyboard nav, dropdown |
-| `seasonalityframemodule/chartfun` | uPlot chart rendering and axis interactions |
-| `seasonalityframemodule/symboloptions` | Rate-limited symbol search with requester callback, default S&P 500 list |
-| `marketdatamodule` | Market history data interface for seasonalityframemodule |
-| `marketdatamodule/datacache` | EOD data cache, fetches from datahub via scimodule |
-| `marketdatamodule/seasonality` | Seasonality calculation algorithms (internal) |
-| `fouriermodule` | FFT analysis for seasonality patterns |
+| `marketdatamodule` | public data interface: seasonality composites, latest data |
+| `marketdatamodule/datacache` | fetches full EOD history once, buckets it by year / month / week |
+| `marketdatamodule/seasonality` | seasonality calculations (ADR) |
+| `hlcbacktestingmodule` | `SymbolBacktester` - backtests on HLC history (shared by seasonality + screeners) |
+| `symboloptionsmodule` / `symbolselectmodule` / `fuzzyscoremodule` | symbol list, `SymbolSelect` widget, fuzzy search |
 
-### UI Modules
+### Features
 | Module | Purpose |
 |--------|---------|
-| `headermodule` / `footermodule` | Page structure |
-| `sidenavmodule` | Navigation sidebar |
-| `contentmodule` | Main content area switching |
-| `accountframemodule` | Account management UI |
-| `noaccountmodule` | Login/registration UI |
-| `summaryframemodule` | Dashboard summary view |
-| `svgiconsmodule` | SVG icon definitions |
-| `utilsmodule` | Shared utilities: date helpers, factor array math, leap year constants |
+| `seasonalityframemodule` | coordinator: symbol, history range, chart timeframe, cycle, tabs |
+| `seasonalitycyclesmodule` (+ `cyclemath`) | cycle definition (unit, size, anchor, presets) + compact cycle table |
+| `seasonalitychartmodule` | `SeasonalityChart` (uPlot), range selection |
+| `seasonalitybacktestingmodule` | backtest of the selected range: summary + details table |
+| `scoring/` + `economicareamodule` | parameterized macro scoring per area (see `scoring/README.md`) |
+| `currencytrendframemodule` / `summaryframemodule` | currency pair ranking / summary view |
+| `eventscreenerframemodule` (+ `eventtradechartmodule`, `eventtradedetailsmodule`) | event-based trade screener |
+| `forexscreenerframemodule` (+ `forexlivedata`) | forex screener combining scores, seasonality, live prices |
+| `trafficlightframemodule` (+ `traffliclightdata`) | SPY chart with HYG-EMA state bands, zoom |
+| `optionscreener`, `sectorrotation`, `partners`, `placeholder` frames | mostly placeholders / static |
 
-## UI States (Navigation)
-```
-noaccount -> (login) -> summary
-summary <-> currencytrend <-> seasonality <-> account
-```
-
-## Data Flow
-1. User logs in via `scimodule` -> Access Manager
-2. `accountmodule` stores session in localStorage
-3. `datamodule` opens WebSocket to Backend
-4. Backend pushes data -> `summaryframemodule.updateData()`
-5. Data propagates to `economicareamodule` -> `currencytrendframemodule`
-
-## Economic Areas Tracked
-EUR, USD, JPY, GBP, CAD, AUD, CHF, NZD
-
-## Key Indicators
-- **HICP** - Inflation rate
-- **MRR** - Main Refinancing Rate (policy rate)
-- **GDPG** - GDP Growth
-- **COT Index** - Commitment of Traders (6-week and 36-week)
-
-## Build Commands
-- `pnpm test` - Development server with hot reload
-- `pnpm run check-deployment` - Build and serve production version
-- `pnpm run deployment-build` - Production build only
+## Current Focus
+Seasonality - cycles editor rework (`plan/current-task.md`).

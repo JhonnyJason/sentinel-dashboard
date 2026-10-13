@@ -1,17 +1,7 @@
-# Features for v0.1.0
+# Features
 
 ## Checklist
-- [x] Real data Retrieval from Datahub
-- [x] User choice of Symbol, computation method and timeframe (5, 10, 15, 20, 25, 30)
-- [x] Seasonality Composite Average Daily return + standard deviation 
-- [x] Seasonality Composite Fourier
-- [x] Chart rendering and Display
-- [x] Predefined searchable choices for Stock Symbols (S&P 500)
-- [x] Menu Point and frame placeholders
-- [x] Chart Legend + Improvements
-- [x] Seasonality Backtesting display Summary
-- [x] Seasonality Backtesting
-- [x] Seasonality Backtesting display Details
-- [x] Add Button for quick navigation of chart start position
-- [x] Updated ForexScoring
-- [x] Refining to presentable first release (Warning-Banner "This is Beta", fix bugs, mark experimental features)
+- [x] Seasonality: add analysis of monthly timeframes
+- [x] Seasonality: add analysis of weekly timeframes
+- [ ] Seasonality: analysis of specific intervals or cycles
+- [ ] Seasonality: Implement equity performance curve for backtesting
