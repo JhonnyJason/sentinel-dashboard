@@ -259,3 +259,18 @@ test("isFullCycle + displayAges: continuous vs. single", () => {
     const none = { ...years, included: [false, false, false, false] }
     assert.equal(C.displayAges(none, C.includedChunkFn(none, "2026-10-12")), null)
 })
+
+test("showsLatest: continuous, unambiguous cut-off only", () => {
+    const quarters = { unit: "quarters", size: 4, anchor: "2026-Q1", included: [true, false, false, false] }
+    const q = (included) => ({ ...quarters, included })
+    const check = (cycle) => { const f = C.includedChunkFn(cycle, "2026-10-14"); return C.showsLatest(cycle, f, C.displayAges(cycle, f)) }
+    assert.equal(C.showsLatest(null, null, [1, 0]), true)
+    // Q4 now: Q1 only -> age 3, no latest; Q3 -> age 1; Q4 -> age 0
+    assert.equal(check(quarters), false)
+    assert.equal(check(q([false, false, true, false])), true)
+    assert.equal(check(q([false, false, false, true])), true)
+    // Q1 + Q3 ambiguous
+    assert.equal(check(q([true, false, true, false])), false)
+    const weeks = { unit: "weeks", size: 2, anchor: "2026-10-12", included: [true, false] }
+    assert.equal(check(weeks), false)
+})
