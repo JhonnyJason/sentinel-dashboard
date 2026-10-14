@@ -40,6 +40,7 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `marketdatamodule/datacache` | fetches full EOD history once, buckets it by year / month / week |
 | `marketdatamodule/seasonality` | seasonality calculations (ADR) |
 | `hlcbacktestingmodule` | `SymbolBacktester` - backtests on HLC history (shared by seasonality + screeners) |
+| `tradesimulationmodule` | simulates trades from a backtester summary: stop-loss, take-profit, fees, equity curve, drawdowns |
 | `symboloptionsmodule` / `symbolselectmodule` / `fuzzyscoremodule` | symbol list, `SymbolSelect` widget, fuzzy search |
 
 ### Features
@@ -48,7 +49,8 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `seasonalityframemodule` | coordinator: symbol, history range, chart timeframe, cycle, tabs |
 | `seasonalitycyclesmodule` (+ `cyclemath`) | cycle definition (unit, size, anchor, presets) + compact cycle table |
 | `seasonalitychartmodule` | `SeasonalityChart` (uPlot), range selection |
-| `seasonalitybacktestingmodule` | backtest of the selected range: summary + details table |
+| `seasonalitybacktestingmodule` | backtest of the selected range: summary + details tabs (Performance / Details) |
+| `equityperformancemodule` | "Performance" tab of the backtesting details (charts, controls, summary) |
 | `scoring/` + `economicareamodule` | parameterized macro scoring per area (see `scoring/README.md`) |
 | `currencytrendframemodule` / `summaryframemodule` | currency pair ranking / summary view |
 | `eventscreenerframemodule` (+ `eventtradechartmodule`, `eventtradedetailsmodule`) | event-based trade screener |
@@ -57,4 +59,4 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `optionscreener`, `sectorrotation`, `partners`, `placeholder` frames | mostly placeholders / static |
 
 ## Current Focus
-Seasonality - cycles editor rework (`plan/current-task.md`).
+Seasonality - equity performance curve for backtesting (`plan/current-task.md`).

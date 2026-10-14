@@ -3,5 +3,6 @@
 ## Checklist
 - [x] Seasonality: add analysis of monthly timeframes
 - [x] Seasonality: add analysis of weekly timeframes
-- [ ] Seasonality: analysis of specific intervals or cycles
-- [ ] Seasonality: Implement equity performance curve for backtesting
+- [x] Seasonality: analysis of specific intervals or cycles
+- [x] Seasonality: Implement equity performance curve for backtesting
+- [ ] Seasonality: Implement Barcharts for specific trades.

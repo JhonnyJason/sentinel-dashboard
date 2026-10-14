@@ -25,6 +25,34 @@ Anything that cannot be considered during the current process will be deferred a
       loaded symbol.
 - [ ] `datacache.coffee`: dates are created as UTC noon but read with local getters –
       fine for UTC-11 … UTC+11, wrong beyond.
+- [ ] partnersframemodule - define and communicate exact Sentinel pricing conditions per Partner.
+
+### Equity performance: follow-ups
+- [ ] Second buy-in: define the trigger (e.g. drop of X%), the size, and how the stop-loss relates to it.
+- [ ] Green max-rise markers on the trades bar chart (optional toggle).
+- [ ] Configurable starting equity (fixed at 100$ for now).
+- [ ] Use `tradesimulationmodule` + the UI in the event screener (and other sources of repeatable trades).
+- [ ] Open prices: we only have HLC, so a day that opens below the stop-loss and then rallies above it
+      is filled at the stop-loss level (optimistic). Exact fills need real open values → backend + datacache changes.
+
+### implicit-dom-connect: id detection bugs (tooling, not this repo's sources)
+An id only gets its global when the code uses its camelCased name in a recognised form (e.g. `idName.`). Known misses:
+- [ ] An id used only as an argument (`setSignedPercent(equitySumProfit, ...)`) is not detected.
+      Workaround: a `# equitySumProfit.` comment line next to the call.
+- [ ] Ids in certain Pug nesting constructs are not picked up at all → the global has to be added by hand.
+Fix idea: treat any word-boundary match of the camelCased id as a use, not only property access.
+
+### Standardise input fields
+Inputs are styled per module (symbolselect, cycles, equity performance), each repeating border, radius, padding and focus glow.
+Thoughts:
+- Root cause first: `reset.styl` clears border, padding and background on `input:focus` / `select:focus`, so every module
+  has to restyle the focus state. Dropping those properties from the reset makes the normal state survive focus.
+- One global rule in `globalstyles` (like `.standard-button`), driven by colour variables:
+  `input, select { color var(--input-fg); border 1px solid var(--input-fg); background var(--input-bg); border-radius 3px }`,
+  `:focus { box-shadow 0 0 5px var(--input-fg) }`. Defaults: dark-blue on white.
+- Dark surfaces (e.g. `#backtesting-details-container`) only set `--input-fg: #fff; --input-bg: transparent` - inputs inside
+  are styled correctly without any module rule. Modules keep layout (width, margin) only.
+- The `.select-wrapper` arrow (copied in seasonalityframe and trafficlightframe) belongs in the same place.
 
 ### Datacache: Refresh/Invalidation Mechanism
 Add ability to force re-fetch stale data (e.g. `refreshHistory(dataKey)` or automatic staleness check). Context: 5-day freshness tolerance noted in design.
