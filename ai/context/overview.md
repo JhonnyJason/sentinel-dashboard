@@ -51,6 +51,7 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `seasonalitychartmodule` | `SeasonalityChart` (uPlot), range selection |
 | `seasonalitybacktestingmodule` | backtest of the selected range: summary + details tabs (Performance / Details) |
 | `equityperformancemodule` | "Performance" tab of the backtesting details (charts, controls, summary) |
+| `chanceriskprofilemodule` | "Chancen-Risiko-Profil" tab: histogram of daily price change vs. entry, coloured by trade win/loss |
 | `scoring/` + `economicareamodule` | parameterized macro scoring per area (see `scoring/README.md`) |
 | `currencytrendframemodule` / `summaryframemodule` | currency pair ranking / summary view |
 | `eventscreenerframemodule` (+ `eventtradechartmodule`, `eventtradedetailsmodule`) | event-based trade screener |
@@ -59,4 +60,4 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `optionscreener`, `sectorrotation`, `partners`, `placeholder` frames | mostly placeholders / static |
 
 ## Current Focus
-Seasonality - equity performance curve for backtesting (`plan/current-task.md`).
+Seasonality - Chancen-Risiko-Profil tab in the backtesting details (`plan/current-task.md`).

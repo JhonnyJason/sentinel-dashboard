@@ -1,26 +1,25 @@
 # Task
-Trades chart: create a missing stop-loss / take-profit level by pressing into the chart.
+Implement Chancen-Risiko profil.
+A very rough illustration is shown in chance-risk-profile.jpg
 
 ## Details
-- Module: `equityperformancemodule` (trades chart `#equity-trades-chart`).
-- Press inside the plot area (`tradesChart.over`):
-  - value > 0 and take-profit off → take-profit at that level
-  - value < 0 and stop-loss off → stop-loss at that level
-  - otherwise (that level already exists, or exactly 0) → nothing; an existing line is dragged as before
-- Value via `tradesChart.posToVal`, written to the input with the same rounding and 0.1% clamp as the drag → `onControlsChanged()`; the inputs stay the single source of truth.
-- Create and drag in one gesture: the new line takes the pointer capture, its existing drag handler moves it on.
-- Mouse: create + grab on pointerdown.
-- Touch: vertical drag and page scroll share the direction, so `touch-action: pan-y` (as in the seasonality select) does not work. Decided by speed:
-  - first move fast → swipe, the page scrolls, nothing created
-  - first move slow, or held still for `holdMs` → create + grab; `touchmove` gets `preventDefault` (no scroll)
-  - tap → create only
-  - the non-passive `touchmove` listener sits on the touched node itself: the render detaches it, and events to a detached node no longer bubble.
-- Cursor hint (mouse): crosshair over the plot only where a press would create a level.
-- Seasonality select (`seasonalitychartmodule` `attachTouchSelect`): has no timeout; direction-based via `touch-action`, felt delay = browser direction detection + `minDragPx = 10`. Untouched here.
+In the seasonalityframe in together with the backtesting details table and the performance curve, we shall have the Tab labelled "Chancen-Risiko-Profil", order: Performance, Chancen-Risiko-Profil, Details.
+- We donot need to display the smooth gaussian function there, naturally the Barchart would resembel a gaussian shape + some noise.
+- The center is 0% then each Bar Chart left and right resembles a range e.g ( 0 to -0.5%) And the Number associated with that Barchart is the number of days the price was in that range.
+- The effective size of each bars' requires some experimentation and might also depend on the effective distribution in the results.
+- Then each bar should actually be split in 2 bars a reddish Bar which represents the part where the trade then resulted in a loss. Then a greenish Bar on Top which represents the the part where the trade resulted in a profit. 
+
+## Decisions
+- Value per trade-day: daily close's price change vs. entry (`closeF` from `path`, short sign undone). Colour = trade result, so long/short shows in the colours.
+- Raw trades: `simulate(summary, {})` - no stop-loss / take-profit / fees, independent of the Performance tab controls. Win/loss = raw `profitF > 0`.
+- Bins: 0 is always an edge. Width = half the Freedman–Diaconis width `IQR·n^(-1/3)`, rounded to the nearest nice step (0.1 / 0.2 / 0.25 / 0.5 / 1 / 2 / 2.5 / 5 %). Range = min..max (incl. 0) snapped to multiples of `w`, no clipping. Bin count kept within 10–100 by stepping the nice width.
+- Stacked bars: losing trades red at the bottom, winning trades green on top. Height = number of trade-days.
+- x-axis: % ticks on the bin edges, white vertical 0% line, bars max 40px. No gaussian curve, no σ / mean markers, no tooltip.
 
 ## Sub-Tasks
-- [x] Factor the pointer → level conversion out of `onLevelDrag` (shared by drag and create)
-- [x] Press handling on `equityTradesChart`: mouse immediate, touch speed/hold/tap
-- [x] Cursor hint via a class on `equityTradesChart`
-- [x] Update `equityperformancemodule/README.md`
-- [ ] Check in the browser: mouse + touch, create, create-and-drag, swipe still scrolls, existing level side ignored
+- [x] New module `chanceriskprofilemodule` (`npm run add-module`): `setResults(summary)`, binning as pure function + small unit test
+- [x] Tab "Chancen-Risiko-Profil" in `backtesting-details.pug`, panel includes the module's pug
+- [x] uPlot stacked bar chart (render only while visible, ResizeObserver, like `equityperformancemodule`)
+- [x] Call `setResults` from `seasonalitybacktestingmodule.run`
+- [x] Module `README.md`, update `ai/context/overview.md`
+- [ ] Check in the browser, tune bin count if needed
