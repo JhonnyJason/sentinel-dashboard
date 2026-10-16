@@ -20,6 +20,7 @@ seasonalityframemodule (state: selectedSymbol, selectedRangeY, chartTimeframe, s
   ├─ seasonalitycyclesmodule: setRange(Jan 1 of selectedRangeY years ago, today); change listener → selectedCycle
   ├─ marketdatamodule.getCloseChunks → frame: isIncluded, ages, calculateSeasonalityComposite
   ├─ seasonalitychartmodule.prepareData({ composite, chunks, refDate, timeframe, ages }) / render  (range select → backtestingRegion)
+  ├─ seasonalityblocksmodule.setData(chartData) - block bar chart from the same data
   └─ seasonalitybacktestingmodule.run (entry/exit dates from the chart axis, one run per period back, isRunIncluded in single mode)
 ```
 - `selectedCycle` filters composite + backtest. Display modes (continuous / single) in `seasonalitychartmodule/README.md`.
@@ -35,4 +36,7 @@ seasonalityframemodule (state: selectedSymbol, selectedRangeY, chartTimeframe, s
 - Preparation happens in `marketdatamodule` (yearly via `normalizeYearData`), so the seasonality core is timeframe-agnostic. Composite curves have N + 1 points.
 
 ## Styling conventions
+- `#chart-container` is 760px: `#seasonality-chart` the top 500px, `#seasonality-blocks` the lower 260px. Overlays positioned against the seasonality chart use `top` (e.g. `#reset-time-axis-button`).
 - Regular text buttons: `button.click-button.standard-button` (`globalstyles/styles.styl`). Only layout (width, margin) goes into the module's styles.
+- Selects: `.select-wrapper: select#…` (arrow + field style in `globalstyles/styles.styl`). Modules only add widths.
+- CoffeeScript trap: a postfix `for` binds to the `else` branch - `((if a then b else c) for x in xs)` needs the inner parentheses.

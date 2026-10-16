@@ -53,3 +53,23 @@ test("sign -1 (short): price change instead of profit, colour still by profit", 
     assert.ok(edges[i + 1] <= 0, "profit of a short sits left of 0")
     assert.equal(sum(wins), 3)
 })
+
+test("offset: the choices are nice widths within 10..100 bins, coarse to fine, 0 stays an edge", () => {
+    const trades = [trade(spread(600, 0.05))]
+    const auto = binProfile(trades)
+    const width = (p) => p.edges[1] - p.edges[0]
+    const { choices } = auto
+    assert.ok(choices.length > 1)
+    assert.ok(choices.some((c) => c.offset == 0 && Math.abs(c.width - width(auto)) < 1e-12))
+    for (let i = 1; i < choices.length; i++) assert.ok(choices[i].width < choices[i - 1].width, "coarse to fine")
+    for (const c of choices) {
+        const p = binProfile(trades, 1, c.offset)
+        assert.equal(p.edges.length - 1, c.count)
+        assert.ok(c.count >= 10 && c.count <= 100, `${c.count} bins`)
+        assert.ok(Math.abs(width(p) - c.width) < 1e-12)
+        const zeroAt = -p.edges[0] / width(p)
+        assert.ok(Math.abs(zeroAt - Math.round(zeroAt)) < 1e-6, "0 is an edge")
+    }
+    // not a choice (stale offset) -> the FD width
+    assert.deepEqual(binProfile(trades, 1, 50).edges, auto.edges)
+})

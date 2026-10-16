@@ -38,7 +38,7 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 |--------|---------|
 | `marketdatamodule` | public data interface: seasonality composites, latest data |
 | `marketdatamodule/datacache` | fetches full EOD history once, buckets it by year / month / week |
-| `marketdatamodule/seasonality` | seasonality calculations (ADR) |
+| `marketdatamodule/seasonality` | seasonality calculations (ADR), block returns for the bar chart (`blockRanges`, `calculateBlockReturns`) |
 | `hlcbacktestingmodule` | `SymbolBacktester` - backtests on HLC history (shared by seasonality + screeners) |
 | `tradesimulationmodule` | simulates trades from a backtester summary: stop-loss, take-profit, fees, equity curve, drawdowns |
 | `symboloptionsmodule` / `symbolselectmodule` / `fuzzyscoremodule` | symbol list, `SymbolSelect` widget, fuzzy search |
@@ -49,9 +49,10 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `seasonalityframemodule` | coordinator: symbol, history range, chart timeframe, cycle, tabs |
 | `seasonalitycyclesmodule` (+ `cyclemath`) | cycle definition (unit, size, anchor, presets) + compact cycle table |
 | `seasonalitychartmodule` | `SeasonalityChart` (uPlot), range selection |
+| `seasonalityblocksmodule` | bar chart below the seasonality chart: avg / min / max % change per block (months, days) |
 | `seasonalitybacktestingmodule` | backtest of the selected range: summary + details tabs (Performance / Details) |
 | `equityperformancemodule` | "Performance" tab of the backtesting details (charts, controls, summary) |
-| `chanceriskprofilemodule` | "Chancen-Risiko-Profil" tab: histogram of daily price change vs. entry, coloured by trade win/loss |
+| `chanceriskprofilemodule` | "Chancen-Risiko-Profil" tab: histogram of daily price change vs. entry, coloured by trade win/loss, darker shade for "overshadowed" bars, bin width select |
 | `scoring/` + `economicareamodule` | parameterized macro scoring per area (see `scoring/README.md`) |
 | `currencytrendframemodule` / `summaryframemodule` | currency pair ranking / summary view |
 | `eventscreenerframemodule` (+ `eventtradechartmodule`, `eventtradedetailsmodule`) | event-based trade screener |
@@ -60,4 +61,4 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `optionscreener`, `sectorrotation`, `partners`, `placeholder` frames | mostly placeholders / static |
 
 ## Current Focus
-Seasonality - Chancen-Risiko-Profil tab in the backtesting details (`plan/current-task.md`).
+Seasonality - block bar chart below the seasonality chart done (`seasonalityblocksmodule`). Next task to be planned. Chancen-Risiko-Profil tab done.

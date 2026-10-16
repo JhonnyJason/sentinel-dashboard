@@ -3,6 +3,12 @@ Anything that cannot be considered during the current process will be deferred a
 
 ## Deferred Items
 
+### Seasonality frame: one state setter
+- [ ] `seasonalityframemodule`: the 5 `setStateLoading` / `setChartActive` / `setNoData` / `setChartInactive` /
+      `setBacktestingActive` functions each remove + add the state classes by hand. Replace by one
+      `setFrameState(classes, frozen)` that clears all state classes, adds the given ones and (un)freezes
+      the symbol select: ~50 → ~10 lines, no leftover class from a forgotten `remove`.
+
 ### General noted updates (TODO later)
 - [ ] seasonalityframe: adding light-blue background below line "mountain-diagram" style
 - [ ] Decide: include the unfinished chunk 0 in the composite? With the ADR core this is
@@ -26,6 +32,11 @@ Anything that cannot be considered during the current process will be deferred a
 - [ ] `datacache.coffee`: dates are created as UTC noon but read with local getters –
       fine for UTC-11 … UTC+11, wrong beyond.
 - [ ] partnersframemodule - define and communicate exact Sentinel pricing conditions per Partner.
+
+### Seasonality blocks: weeks
+- [ ] Weeks block for yearly / quarterly - weeks don't align with years / quarters. Options:
+      first 7 days of the year as week 1 | only complete weeks | incomplete weeks count fully.
+      Labeling of the weeks is open too.
 
 ### Equity performance: follow-ups
 - [ ] Second buy-in: define the trigger (e.g. drop of X%), the size, and how the stop-loss relates to it.
@@ -81,3 +92,7 @@ Rules:
 - On a continuous axis a filtered (single) composite is drawn on the last part only.
 
 Prepared by the cycles task: a composite is `chunks + { method, isIncluded }` on shared chunks (a history range like -5 → -10 is just an age filter, combined with the cycle filter), placed via `placeComposite(axis, composite)`, backtest via `isRunIncluded`. Missing then: the composite definitions (UI + state), loading the deepest window needed, a legend per composite and the target choice.
+
+### Seasonality charts: resize
+- [ ] The seasonality chart and the blocks chart are only drawn on data / block change, never on a window
+      resize. One `ResizeObserver` on `#chart-container` re-rendering both (like the equity charts do).
