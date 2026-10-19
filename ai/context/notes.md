@@ -39,4 +39,5 @@ seasonalityframemodule (state: selectedSymbol, selectedRangeY, chartTimeframe, s
 - `#chart-container` is 760px: `#seasonality-chart` the top 500px, `#seasonality-blocks` the lower 260px. Overlays positioned against the seasonality chart use `top` (e.g. `#reset-time-axis-button`).
 - Regular text buttons: `button.click-button.standard-button` (`globalstyles/styles.styl`). Only layout (width, margin) goes into the module's styles.
 - Selects: `.select-wrapper: select#…` (arrow + field style in `globalstyles/styles.styl`). Modules only add widths.
+- `reset.styl` strips defaults: `b` has `font: inherit` (set `font-weight bold` explicitly), `ul` has `list-style: none`.
 - CoffeeScript trap: a postfix `for` binds to the `else` branch - `((if a then b else c) for x in xs)` needs the inner parentheses.

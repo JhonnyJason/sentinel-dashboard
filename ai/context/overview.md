@@ -52,7 +52,7 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `seasonalityblocksmodule` | bar chart below the seasonality chart: avg / min / max % change per block (months, days) |
 | `seasonalitybacktestingmodule` | backtest of the selected range: summary + details tabs (Performance / Details) |
 | `equityperformancemodule` | "Performance" tab of the backtesting details (charts, controls, summary) |
-| `chanceriskprofilemodule` | "Chancen-Risiko-Profil" tab: histogram of daily price change vs. entry, coloured by trade win/loss, darker shade for "overshadowed" bars, bin width select |
+| `chanceriskprofilemodule` | "Chancen-Risiko-Profil" tab: histogram of daily price change vs. entry, coloured by trade win/loss, darker shade for "overshadowed" bars, bin width select, robust bell curve fit (median/MAD) with σ lines, labels and Verlust-/Gewinnseite legend |
 | `scoring/` + `economicareamodule` | parameterized macro scoring per area (see `scoring/README.md`) |
 | `currencytrendframemodule` / `summaryframemodule` | currency pair ranking / summary view |
 | `eventscreenerframemodule` (+ `eventtradechartmodule`, `eventtradedetailsmodule`) | event-based trade screener |
@@ -61,4 +61,4 @@ optionscreener, sectorrotation, trafficlight, partners, account, noaccount.
 | `optionscreener`, `sectorrotation`, `partners`, `placeholder` frames | mostly placeholders / static |
 
 ## Current Focus
-Seasonality - block bar chart below the seasonality chart done (`seasonalityblocksmodule`). Next task to be planned. Chancen-Risiko-Profil tab done.
+Seasonality - block bar chart below the seasonality chart done (`seasonalityblocksmodule`). Next task to be planned. Chancen-Risiko-Profil tab done, incl. the bell curve σ indicator.
